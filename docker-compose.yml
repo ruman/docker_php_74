@@ -1,0 +1,41 @@
+version: "2"
+services:
+    www:
+        build: ./apache2/
+        ports: 
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./php7.4.ini:/usr/local/etc/php/php.ini
+            - ./public/:/var/www/html/
+            - ./apache2/sites/:/etc/apache2/sites-available/
+        links:
+            - db
+        networks:
+            - default
+    db:
+        build: ./mariadb
+        ports: 
+            - "3316:3306"
+        environment:
+            MYSQL_DATABASE: test
+            MYSQL_USER: wordpress
+            MYSQL_PASSWORD: wordpress
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ./store:/var/lib/mysql
+        networks:
+            - default
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links: 
+            - db:db
+        ports:
+            - 8010:80
+        environment:
+            MYSQL_USER: root
+            MYSQL_PASSWORD: root
+            MYSQL_ROOT_PASSWORD: root
+# volumes:
+#     php56store:
+#         external: true
